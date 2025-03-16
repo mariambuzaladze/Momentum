@@ -6,6 +6,22 @@ export default function TaksOverview({ task }) {
     return format(new Date(dateString), "dd MMM yy", { locale: ka });
   };
 
+  const getStatusStyles = (statusName) => {
+    switch (statusName) {
+      case "დასაწყები":
+        return "border-[#f7bc30]";
+
+      case "პროგრესში":
+        return "border-[#fb5607]";
+      case "მზად ტესტირებისთვის":
+        return "border-[#ff006e]";
+      case "დასრულებული":
+        return "border-[#3a86ff]";
+    }
+  };
+
+  const statusBgColor = getStatusStyles(task.status.name);
+
   const getPriorityStyles = (priorityName) => {
     switch (priorityName) {
       case "დაბალი":
@@ -50,7 +66,9 @@ export default function TaksOverview({ task }) {
   const departmentBgColor = getDepartmentBgColor(task.department.name);
 
   return (
-    <div className="flex flex-col p-5 gap-7 w-[380px] rounded-[15px] border border-[#f7bc30]">
+    <div
+      className={`flex flex-col p-5 gap-7 w-[380px] rounded-[15px] border ${statusBgColor}`}
+    >
       <div className="flex justify-between">
         <div className="flex gap-2 items-center">
           <div
@@ -72,7 +90,7 @@ export default function TaksOverview({ task }) {
 
       <div className="flex flex-col gap-4">
         <p className="font-medium text-[#212529]">{task.name}</p>
-        <p className="text-[#343a40]">{task.description}</p>
+        <p className="text-[#343a40] truncate">{task.description}</p>
       </div>
 
       <div className="flex justify-between">

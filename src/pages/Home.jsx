@@ -3,7 +3,7 @@ import TaksOverview from "./components/TaskOverview";
 
 export default function Home() {
   const [tasks, setTasks] = useState([]);
-  const [statuses, setStatusess] = useState([]);
+  const [statuses, setStatuses] = useState([]);
 
   async function getTasks() {
     try {
@@ -53,7 +53,7 @@ export default function Home() {
       .catch((error) => console.error("Error:", error));
 
     getStatuses()
-      .then((data) => setStatusess(data))
+      .then((data) => setStatuses(data))
       .catch((error) => console.error("Error:", error));
   }, []);
 
@@ -78,33 +78,34 @@ export default function Home() {
         </div>
       </section>
 
-      <section>
-        <div className="flex justify-between">
-          {statuses.map((status) => {
-            const statusColors = {
-              1: "bg-[#f7bc30]",
-              2: "bg-[#fb5607]",
-              3: "bg-[#ff006e]",
-              4: "bg-[#3a86ff]",
-            };
+      <section className="grid grid-cols-4 gap-x-[65px] gap-y-[30px]">
+        {statuses.map((status) => {
+          const statusColors = {
+            1: "bg-[#f7bc30]",
+            2: "bg-[#fb5607]",
+            3: "bg-[#ff006e]",
+            4: "bg-[#3a86ff]",
+          };
 
-            return (
+          return (
+            <div key={status.id} className="flex flex-col gap-4">
               <div
-                key={status.id}
-                className={`border rounded-[10px] py-4 w-[380px] flex justify-center items-center text-white text-[20px] ${
-                  statusColors[status.id] || "bg-gray-400"
+                className={`border rounded-[10px] py-4 flex justify-center items-center text-white text-[20px] ${
+                  statusColors[status.id]
                 }`}
               >
                 {status.name}
               </div>
-            );
-          })}
-        </div>
-      </section>
 
-      <section>
-        {tasks.map((task) => {
-          return <TaksOverview key={task.id} task={task} />;
+              <div className="flex flex-col gap-4">
+                {tasks
+                  .filter((task) => task.status.id === status.id)
+                  .map((task) => (
+                    <TaksOverview key={task.id} task={task} />
+                  ))}
+              </div>
+            </div>
+          );
         })}
       </section>
     </main>
