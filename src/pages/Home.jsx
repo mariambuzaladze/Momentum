@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
-import TaksOverview from "./components/TaskOverview";
+import TaskOverview from "./components/TaskOverview";
+import Filter from "./components/Filter";
 
 export default function Home() {
   const [tasks, setTasks] = useState([]);
   const [statuses, setStatuses] = useState([]);
+  const [activeFilter, setActiveFilter] = useState(null); // Track the active filter modal
+  const [selectedFilters, setSelectedFilters] = useState({
+    department: [],
+    priority: [],
+    employee: [],
+  });
+  const [filteredTasks, setFilteredTasks] = useState([]); // Store filtered tasks
 
   async function getTasks() {
     try {
@@ -30,11 +38,7 @@ export default function Home() {
   async function getStatuses() {
     try {
       const response = await fetch(
-        "https://momentum.redberryinternship.ge/api/statuses",
-        {
-          method: "GET",
-          headers: {},
-        }
+        "https://momentum.redberryinternship.ge/api/statuses"
       );
 
       if (!response.ok) {
@@ -49,7 +53,10 @@ export default function Home() {
 
   useEffect(() => {
     getTasks()
-      .then((data) => setTasks(data))
+      .then((data) => {
+        setTasks(data);
+        setFilteredTasks(data);
+      })
       .catch((error) => console.error("Error:", error));
 
     getStatuses()
@@ -57,25 +64,66 @@ export default function Home() {
       .catch((error) => console.error("Error:", error));
   }, []);
 
+  const handleFilterChange = (filterName, selectedItems) => {
+    const filterMapping = {
+      დეპარტამენტი: "department",
+      პრიორიტეტი: "priority",
+      თანამშრომელი: "employee",
+    };
+
+    const englishFilterName = filterMapping[filterName];
+    setSelectedFilters((prev) => {
+      const updatedFilters = { ...prev, [englishFilterName]: selectedItems };
+      return updatedFilters;
+    });
+  };
+
+  const filterTasks = (tasks, filters) => {
+    return tasks.filter((task) => {
+      const isDepartmentMatch =
+        filters.department.length === 0 ||
+        filters.department.includes(task.department.id);
+
+      const isPriorityMatch =
+        filters.priority.length === 0 ||
+        filters.priority.includes(task.priority.id);
+
+      const isEmployeeMatch =
+        filters.employee.length === 0 ||
+        filters.employee.includes(task.employee.id);
+
+      return isDepartmentMatch && isPriorityMatch && isEmployeeMatch;
+    });
+  };
+
+  useEffect(() => {
+    const filtered = filterTasks(tasks, selectedFilters);
+    setFilteredTasks(filtered);
+  }, [selectedFilters, tasks]);
+
   return (
     <main className="flex flex-col pt-5 px-[100px] gap-[55px]">
       <h1 className="text-[34px] font-semibold">დავალებების გვერდი</h1>
 
-      <section className="flex gap-[45px] px-4 py-2 w-fit rounded-[10px] border border-[#dee2e6]">
-        <div className="flex gap-3 items-center">
-          <p>დეპარტამენტი</p>
-          <img src="Shape (1).svg" alt="arrow down logo" />
-        </div>
-
-        <div className="flex gap-3 items-center">
-          <p>პრიპრიტეტი</p>
-          <img src="Shape (1).svg" alt="arrow down logo" />
-        </div>
-
-        <div className="flex gap-3 items-center">
-          <p>თანამშრომელი</p>
-          <img src="Shape (1).svg" alt="arrow down logo" />
-        </div>
+      <section className="relative flex gap-[45px] px-4 py-2 w-fit rounded-[10px] border border-[#dee2e6]">
+        <Filter
+          filterName="დეპარტამენტი"
+          onFilterChange={handleFilterChange}
+          activeFilter={activeFilter}
+          setActiveFilter={setActiveFilter}
+        />
+        <Filter
+          filterName="პრიორიტეტი"
+          onFilterChange={handleFilterChange}
+          activeFilter={activeFilter}
+          setActiveFilter={setActiveFilter}
+        />
+        <Filter
+          filterName="თანამშრომელი"
+          onFilterChange={handleFilterChange}
+          activeFilter={activeFilter}
+          setActiveFilter={setActiveFilter}
+        />
       </section>
 
       <section className="grid grid-cols-4 gap-x-[65px] gap-y-[30px]">
@@ -98,10 +146,10 @@ export default function Home() {
               </div>
 
               <div className="flex flex-col gap-4">
-                {tasks
+                {filteredTasks
                   .filter((task) => task.status.id === status.id)
                   .map((task) => (
-                    <TaksOverview key={task.id} task={task} />
+                    <TaskOverview key={task.id} task={task} />
                   ))}
               </div>
             </div>
