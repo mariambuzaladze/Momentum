@@ -2,38 +2,16 @@ import { useEffect, useState } from "react";
 import TaskOverview from "./components/TaskOverview";
 import Filter from "./components/Filter";
 
-export default function Home() {
+export default function Home({ getTasks }) {
   const [tasks, setTasks] = useState([]);
   const [statuses, setStatuses] = useState([]);
-  const [activeFilter, setActiveFilter] = useState(null); // Track the active filter modal
+  const [activeFilter, setActiveFilter] = useState(null);
   const [selectedFilters, setSelectedFilters] = useState({
     department: [],
     priority: [],
     employee: [],
   });
-  const [filteredTasks, setFilteredTasks] = useState([]); // Store filtered tasks
-
-  async function getTasks() {
-    try {
-      const response = await fetch(
-        "https://momentum.redberryinternship.ge/api/tasks",
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer 9e6c7cca-7d41-4f5b-8c6d-585a9921a547",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Tasks failed:", error);
-    }
-  }
+  const [filteredTasks, setFilteredTasks] = useState([]);
 
   async function getStatuses() {
     try {

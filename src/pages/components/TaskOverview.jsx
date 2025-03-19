@@ -1,7 +1,9 @@
 import { format } from "date-fns";
 import { ka } from "date-fns/locale";
+import { useNavigate } from "react-router";
 
 export default function TaksOverview({ task }) {
+  const navigate = useNavigate();
   const formatDueDate = (dateString) => {
     return format(new Date(dateString), "dd MMM yy", { locale: ka });
   };
@@ -68,6 +70,9 @@ export default function TaksOverview({ task }) {
   return (
     <div
       className={`flex flex-col p-5 gap-7 w-[380px] rounded-[15px] border ${statusBgColor}`}
+      onClick={() => {
+        navigate(`/task/${task.id}`);
+      }}
     >
       <div className="flex justify-between">
         <div className="flex gap-2 items-center">
