@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import TaskOverview from "./components/TaskOverview";
 import Filter from "./components/Filter";
 
-export default function Home({ getTasks }) {
+export default function Home({ getTasks, getStatuses }) {
   const [tasks, setTasks] = useState([]);
   const [statuses, setStatuses] = useState([]);
   const [activeFilter, setActiveFilter] = useState(null);
@@ -12,22 +12,6 @@ export default function Home({ getTasks }) {
     employee: [],
   });
   const [filteredTasks, setFilteredTasks] = useState([]);
-
-  async function getStatuses() {
-    try {
-      const response = await fetch(
-        "https://momentum.redberryinternship.ge/api/statuses"
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Statuses failed:", error);
-    }
-  }
 
   useEffect(() => {
     getTasks()

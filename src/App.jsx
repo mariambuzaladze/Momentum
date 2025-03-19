@@ -27,12 +27,35 @@ function App() {
       console.error("Tasks failed:", error);
     }
   }
+
+  async function getStatuses() {
+    try {
+      const response = await fetch(
+        "https://momentum.redberryinternship.ge/api/statuses"
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Statuses failed:", error);
+    }
+  }
+
   return (
     <BrowserRouter>
       <Header />
       <Routes>
-        <Route path="/" element={<Home getTasks={getTasks} />} />
-        <Route path="/task/:id" element={<Task getTasks={getTasks} />} />
+        <Route
+          path="/"
+          element={<Home getTasks={getTasks} getStatuses={getStatuses} />}
+        />
+        <Route
+          path="/task/:id"
+          element={<Task getTasks={getTasks} getStatuses={getStatuses} />}
+        />
         <Route path="/addTask" element={<AddTask />} />
       </Routes>
     </BrowserRouter>
