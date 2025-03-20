@@ -24,6 +24,17 @@ const AddTask = () => {
       .then((res) => setStatuses(res.data));
   }, []);
 
+  // Load form data from localStorage if available
+  const savedTask = JSON.parse(localStorage.getItem("taskData")) || {
+    name: "",
+    description: "",
+    department_id: "",
+    employee_id: "",
+    priority_id: "2",
+    status_id: "1",
+    due_date: new Date().toISOString().split("T")[0],
+  };
+
   const validationSchema = Yup.object({
     name: Yup.string()
       .min(3, "მინიმუმ 3 სიმბოლო")
@@ -67,20 +78,21 @@ const AddTask = () => {
     }
   };
 
+  const handleInputChange = (e, setFieldValue) => {
+    const { name, value } = e.target;
+    setFieldValue(name, value);
+    localStorage.setItem(
+      "taskData",
+      JSON.stringify({ ...savedTask, [name]: value })
+    );
+  };
+
   return (
     <main className="flex flex-col gap-6 px-[118px] py-10">
       <h1>შექმენი ახალი დავალება</h1>
       <div className="rounded-[4px] border border-[#ddd2ff] bg-[rgba(251,249,255,0.65)] py-[65px] px-[55px]">
         <Formik
-          initialValues={{
-            name: "",
-            description: "",
-            department_id: "",
-            employee_id: "",
-            priority_id: "2",
-            status_id: "1",
-            due_date: new Date().toISOString().split("T")[0],
-          }}
+          initialValues={savedTask}
           validationSchema={validationSchema}
           onSubmit={async (values, { setSubmitting }) => {
             try {
@@ -94,6 +106,7 @@ const AddTask = () => {
                   },
                 }
               );
+              localStorage.removeItem("taskData"); // Clear localStorage after successful submission
               navigate("/"); // Redirect to home after successful submission
             } catch (error) {
               console.error("Error submitting task:", error);
@@ -106,7 +119,12 @@ const AddTask = () => {
             <Form className="grid grid-cols-2 gap-4">
               <div>
                 <label>სათაური</label>
-                <Field type="text" name="name" className="input" />
+                <Field
+                  type="text"
+                  name="name"
+                  className="input"
+                  onChange={(e) => handleInputChange(e, setFieldValue)}
+                />
                 <ErrorMessage name="name" component="div" className="error" />
               </div>
               <div>
@@ -114,7 +132,10 @@ const AddTask = () => {
                 <Field
                   as="select"
                   name="department_id"
-                  onChange={(e) => handleDepartmentChange(e, setFieldValue)}
+                  onChange={(e) => {
+                    handleInputChange(e, setFieldValue);
+                    handleDepartmentChange(e, setFieldValue);
+                  }}
                 >
                   <option value="">აირჩიეთ</option>
                   {departments.map((dep) => (
@@ -149,7 +170,12 @@ const AddTask = () => {
               )}
               <div>
                 <label>აღწერა</label>
-                <Field as="textarea" name="description" className="input" />
+                <Field
+                  as="textarea"
+                  name="description"
+                  className="input"
+                  onChange={(e) => handleInputChange(e, setFieldValue)}
+                />
                 <ErrorMessage
                   name="description"
                   component="div"
@@ -158,7 +184,11 @@ const AddTask = () => {
               </div>
               <div>
                 <label>პრიორიტეტი</label>
-                <Field as="select" name="priority_id">
+                <Field
+                  as="select"
+                  name="priority_id"
+                  onChange={(e) => handleInputChange(e, setFieldValue)}
+                >
                   {priorities.map((pri) => (
                     <option key={pri.id} value={pri.id}>
                       {pri.name}
@@ -173,7 +203,11 @@ const AddTask = () => {
               </div>
               <div>
                 <label>სტატუსი</label>
-                <Field as="select" name="status_id">
+                <Field
+                  as="select"
+                  name="status_id"
+                  onChange={(e) => handleInputChange(e, setFieldValue)}
+                >
                   {statuses.map((status) => (
                     <option key={status.id} value={status.id}>
                       {status.name}
@@ -188,7 +222,12 @@ const AddTask = () => {
               </div>
               <div>
                 <label>დედლაინი</label>
-                <Field type="date" name="due_date" className="input" />
+                <Field
+                  type="date"
+                  name="due_date"
+                  className="input"
+                  onChange={(e) => handleInputChange(e, setFieldValue)}
+                />
                 <ErrorMessage
                   name="due_date"
                   component="div"
