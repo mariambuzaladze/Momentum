@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 
 const AddTask = () => {
+  const navigate = useNavigate();
+
   const [departments, setDepartments] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [priorities, setPriorities] = useState([]);
@@ -79,16 +82,24 @@ const AddTask = () => {
             due_date: new Date().toISOString().split("T")[0],
           }}
           validationSchema={validationSchema}
-          onSubmit={async (values) => {
-            await axios.post(
-              "https://momentum.redberryinternship.ge/api/tasks",
-              values,
-              {
-                headers: {
-                  Authorization: "Bearer 9e6c7cca-7d41-4f5b-8c6d-585a9921a547",
-                },
-              }
-            );
+          onSubmit={async (values, { setSubmitting }) => {
+            try {
+              await axios.post(
+                "https://momentum.redberryinternship.ge/api/tasks",
+                values,
+                {
+                  headers: {
+                    Authorization:
+                      "Bearer 9e6c7cca-7d41-4f5b-8c6d-585a9921a547",
+                  },
+                }
+              );
+              navigate("/"); // Redirect to home after successful submission
+            } catch (error) {
+              console.error("Error submitting task:", error);
+            } finally {
+              setSubmitting(false);
+            }
           }}
         >
           {({ setFieldValue, values }) => (

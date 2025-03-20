@@ -1,11 +1,15 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
 import Home from "./pages/Home";
 import Task from "./pages/Task";
 import AddTask from "./pages/AddTask";
 import Header from "./pages/components/Header";
+import AddEmployee from "./pages/components/AddEmployee";
 
 function App() {
+  const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
+
   async function getTasks() {
     try {
       const response = await fetch(
@@ -46,7 +50,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Header />
+      <Header onOpenModal={() => setIsEmployeeModalOpen(true)} />
       <Routes>
         <Route
           path="/"
@@ -58,6 +62,10 @@ function App() {
         />
         <Route path="/addTask" element={<AddTask />} />
       </Routes>
+
+      {isEmployeeModalOpen && (
+        <AddEmployee onClose={() => setIsEmployeeModalOpen(false)} />
+      )}
     </BrowserRouter>
   );
 }
