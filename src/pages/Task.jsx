@@ -280,58 +280,69 @@ export default function Task({ getTasks, getStatuses }) {
       </div>
 
       <div className="px-10 py-11 rounded-[10px] border border-[#ddd2ff] bg-[rgba(248,243,254,0.65)] gap-[64px] w-[740px]">
-        <div className="flex flex-col gap-7 bg-white rounded-[10px] border border-[#adb5bd] px-5 py-4">
+        <div className="flex flex-col gap-4 bg-white rounded-[10px] border border-[#adb5bd] p-6 shadow-sm">
           <input
             type="text"
             placeholder="დაწერე კომენტარი"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
           />
-          <button onClick={handleAddComment}>დააკომენტარე</button>
+          <button
+            onClick={handleAddComment}
+            className="w-full bg-[#8338EC] text-white py-2 px-4 rounded-lg hover:bg-[#B588F4] focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+          >
+            დააკომენტარე
+          </button>
         </div>
 
-        <div>
-          <div className="flex gap-2 items-center">
-            <p>კომენტარები</p>
-            <div className="p-2.5 rounded-full bg-[#8338ec]">
+        <div className="mt-8">
+          <div className="flex gap-2 items-center mb-6">
+            <p className="text-xl font-semibold text-gray-800">კომენტარები</p>
+            <div className="p-2 rounded-full bg-[#8338ec] text-white text-sm font-semibold">
               {task.total_comments}
             </div>
           </div>
 
-          <div className="mt-4">
+          <div className="space-y-6">
             {comments.map((comment) => (
-              <div key={comment.id} className="mb-4">
-                <div className="flex gap-2 items-center">
+              <div
+                key={comment.id}
+                className="bg-white rounded-[10px] border border-[#ddd2ff] p-6 shadow-sm"
+              >
+                <div className="flex gap-4 items-start">
                   <img
                     src={comment.author_avatar}
                     alt="author avatar"
-                    className="w-8 h-8 rounded-full"
+                    className="w-10 h-10 rounded-full"
                   />
-                  <div>
-                    <p className="font-semibold">{comment.author_nickname}</p>
-                    <p>{comment.text}</p>
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-800">
+                      {comment.author_nickname}
+                    </p>
+                    <p className="text-gray-600 mt-1">{comment.text}</p>
                   </div>
                 </div>
 
                 {comment.sub_comments?.map((subComment) => (
-                  <div key={subComment.id} className="ml-8 mt-2">
-                    <div className="flex gap-2 items-center">
+                  <div key={subComment.id} className="ml-12 mt-4">
+                    <div className="flex gap-4 items-start">
                       <img
                         src={subComment.author_avatar}
                         alt="author avatar"
-                        className="w-6 h-6 rounded-full"
+                        className="w-8 h-8 rounded-full"
                       />
-                      <div>
-                        <p className="font-semibold">
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-800">
                           {subComment.author_nickname}
                         </p>
-                        <p>{subComment.text}</p>
+                        <p className="text-gray-600 mt-1">{subComment.text}</p>
                       </div>
                     </div>
                   </div>
                 ))}
 
-                <div className="ml-8 mt-2">
+                <div className="ml-12 mt-4">
                   <input
                     type="text"
                     placeholder="უპასუხე"
@@ -342,8 +353,12 @@ export default function Task({ getTasks, getStatuses }) {
                         [comment.id]: e.target.value,
                       })
                     }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   />
-                  <button onClick={() => handleAddSubComment(comment.id)}>
+                  <button
+                    onClick={() => handleAddSubComment(comment.id)}
+                    className="mt-2 bg-[#8338EC] text-white py-1 px-4 rounded-lg hover:bg-[#B588F4] focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                  >
                     უპასუხე
                   </button>
                 </div>

@@ -24,7 +24,6 @@ const AddTask = () => {
       .then((res) => setStatuses(res.data));
   }, []);
 
-  // Load form data from localStorage if available
   const savedTask = JSON.parse(localStorage.getItem("taskData")) || {
     name: "",
     description: "",
@@ -89,8 +88,10 @@ const AddTask = () => {
 
   return (
     <main className="flex flex-col gap-6 px-[118px] py-10">
-      <h1>შექმენი ახალი დავალება</h1>
-      <div className="rounded-[4px] border border-[#ddd2ff] bg-[rgba(251,249,255,0.65)] py-[65px] px-[55px]">
+      <h1 className="text-2xl font-semibold text-gray-800">
+        შექმენი ახალი დავალება
+      </h1>
+      <div className="rounded-lg border border-[#ddd2ff] bg-[rgba(251,249,255,0.65)] p-8 shadow-sm">
         <Formik
           initialValues={savedTask}
           validationSchema={validationSchema}
@@ -106,8 +107,8 @@ const AddTask = () => {
                   },
                 }
               );
-              localStorage.removeItem("taskData"); // Clear localStorage after successful submission
-              navigate("/"); // Redirect to home after successful submission
+              localStorage.removeItem("taskData");
+              navigate("/");
             } catch (error) {
               console.error("Error submitting task:", error);
             } finally {
@@ -116,22 +117,32 @@ const AddTask = () => {
           }}
         >
           {({ setFieldValue, values }) => (
-            <Form className="grid grid-cols-2 gap-4">
-              <div>
-                <label>სათაური</label>
+            <Form className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  სათაური
+                </label>
                 <Field
                   type="text"
                   name="name"
-                  className="input"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   onChange={(e) => handleInputChange(e, setFieldValue)}
                 />
-                <ErrorMessage name="name" component="div" className="error" />
+                <ErrorMessage
+                  name="name"
+                  component="div"
+                  className="text-sm text-red-500"
+                />
               </div>
-              <div>
-                <label>დეპარტამენტი</label>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  დეპარტამენტი
+                </label>
                 <Field
                   as="select"
                   name="department_id"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   onChange={(e) => {
                     handleInputChange(e, setFieldValue);
                     handleDepartmentChange(e, setFieldValue);
@@ -147,13 +158,20 @@ const AddTask = () => {
                 <ErrorMessage
                   name="department_id"
                   component="div"
-                  className="error"
+                  className="text-sm text-red-500"
                 />
               </div>
+
               {values.department_id && (
-                <div>
-                  <label>პასუხისმგებელი თანამშრომელი</label>
-                  <Field as="select" name="employee_id">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    პასუხისმგებელი თანამშრომელი
+                  </label>
+                  <Field
+                    as="select"
+                    name="employee_id"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  >
                     <option value="">აირჩიეთ</option>
                     {employees.map((emp) => (
                       <option key={emp.id} value={emp.id}>
@@ -164,29 +182,37 @@ const AddTask = () => {
                   <ErrorMessage
                     name="employee_id"
                     component="div"
-                    className="error"
+                    className="text-sm text-red-500"
                   />
                 </div>
               )}
-              <div>
-                <label>აღწერა</label>
+
+              <div className="space-y-2 col-span-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  აღწერა
+                </label>
                 <Field
                   as="textarea"
                   name="description"
-                  className="input"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  rows={4}
                   onChange={(e) => handleInputChange(e, setFieldValue)}
                 />
                 <ErrorMessage
                   name="description"
                   component="div"
-                  className="error"
+                  className="text-sm text-red-500"
                 />
               </div>
-              <div>
-                <label>პრიორიტეტი</label>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  პრიორიტეტი
+                </label>
                 <Field
                   as="select"
                   name="priority_id"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   onChange={(e) => handleInputChange(e, setFieldValue)}
                 >
                   {priorities.map((pri) => (
@@ -198,14 +224,18 @@ const AddTask = () => {
                 <ErrorMessage
                   name="priority_id"
                   component="div"
-                  className="error"
+                  className="text-sm text-red-500"
                 />
               </div>
-              <div>
-                <label>სტატუსი</label>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  სტატუსი
+                </label>
                 <Field
                   as="select"
                   name="status_id"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   onChange={(e) => handleInputChange(e, setFieldValue)}
                 >
                   {statuses.map((status) => (
@@ -217,24 +247,31 @@ const AddTask = () => {
                 <ErrorMessage
                   name="status_id"
                   component="div"
-                  className="error"
+                  className="text-sm text-red-500"
                 />
               </div>
-              <div>
-                <label>დედლაინი</label>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  დედლაინი
+                </label>
                 <Field
                   type="date"
                   name="due_date"
-                  className="input"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   onChange={(e) => handleInputChange(e, setFieldValue)}
                 />
                 <ErrorMessage
                   name="due_date"
                   component="div"
-                  className="error"
+                  className="text-sm text-red-500"
                 />
               </div>
-              <button type="submit" className="btn">
+
+              <button
+                type="submit"
+                className="col-span-2 w-full bg-[#8338EC] text-white py-2 px-4 rounded-lg hover:bg-[#B588F4] focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              >
                 დამატება
               </button>
             </Form>
