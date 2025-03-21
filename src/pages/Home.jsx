@@ -6,10 +6,11 @@ export default function Home({ getTasks, getStatuses }) {
   const [tasks, setTasks] = useState([]);
   const [statuses, setStatuses] = useState([]);
   const [activeFilter, setActiveFilter] = useState(null);
-  const [selectedFilters, setSelectedFilters] = useState({
-    department: [],
-    priority: [],
-    employee: [],
+  const [selectedFilters, setSelectedFilters] = useState(() => {
+    const savedFilters = localStorage.getItem("selectedFilters");
+    return savedFilters
+      ? JSON.parse(savedFilters)
+      : { department: [], priority: [], employee: [] };
   });
   const [filteredTasks, setFilteredTasks] = useState([]);
 
@@ -25,6 +26,10 @@ export default function Home({ getTasks, getStatuses }) {
       .then((data) => setStatuses(data))
       .catch((error) => console.error("Error:", error));
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("selectedFilters", JSON.stringify(selectedFilters));
+  }, [selectedFilters]);
 
   const handleFilterChange = (filterName, selectedItems) => {
     const filterMapping = {
