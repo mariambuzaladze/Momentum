@@ -64,7 +64,7 @@ export default function Home({ getTasks, getStatuses }) {
   }, [selectedFilters, tasks]);
 
   return (
-    <main className="flex flex-col pt-5 px-[100px] gap-[55px]">
+    <main className="flex flex-col py-5 px-[100px] gap-[55px]">
       <h1 className="text-[34px] font-semibold">დავალებების გვერდი</h1>
 
       <section className="relative flex gap-[45px] px-4 py-2 w-fit rounded-[10px] border border-[#dee2e6]">

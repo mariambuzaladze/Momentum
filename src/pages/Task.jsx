@@ -7,6 +7,11 @@ export default function Task({ getTasks, getStatuses }) {
   const [task, setTask] = useState(null);
   const [statuses, setStatuses] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [newSubComment, setNewSubComment] = useState({});
+
+  const token = "9e6c7cca-7d41-4f5b-8c6d-585a9921a547";
 
   useEffect(() => {
     getTasks()
@@ -18,7 +23,7 @@ export default function Task({ getTasks, getStatuses }) {
     getStatuses()
       .then((data) => setStatuses(data))
       .catch((error) => console.error("Error:", error));
-  }, []);
+  }, [comments]);
 
   useEffect(() => {
     if (tasks.length > 0) {
@@ -29,6 +34,19 @@ export default function Task({ getTasks, getStatuses }) {
       }
     }
   }, [tasks, id]);
+
+  useEffect(() => {
+    if (id) {
+      fetch(`https://momentum.redberryinternship.ge/api/tasks/${id}/comments`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => setComments(data))
+        .catch((error) => console.error("Error fetching comments:", error));
+    }
+  }, [id]);
 
   const handleStatusChange = async (e) => {
     const newStatusId = e.target.value;
@@ -41,7 +59,7 @@ export default function Task({ getTasks, getStatuses }) {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer 9e6c7cca-7d41-4f5b-8c6d-585a9921a547`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ status_id: newStatusId }),
         }
@@ -51,7 +69,6 @@ export default function Task({ getTasks, getStatuses }) {
         throw new Error("Failed to update status");
       }
 
-      // Update the task locally to reflect the new status
       const updatedTask = {
         ...task,
         status: statuses.find((s) => s.id === newStatusId),
@@ -59,6 +76,73 @@ export default function Task({ getTasks, getStatuses }) {
       setTask(updatedTask);
     } catch (error) {
       console.error("Error updating status:", error);
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return;
+
+    try {
+      const response = await fetch(
+        `https://momentum.redberryinternship.ge/api/tasks/${id}/comments`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ text: newComment, parent_id: null }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to add comment");
+      }
+
+      const newCommentData = await response.json();
+      setComments([...comments, newCommentData]);
+      setNewComment("");
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
+  };
+
+  const handleAddSubComment = async (parentId) => {
+    const subCommentText = newSubComment[parentId];
+    if (!subCommentText?.trim()) return;
+
+    try {
+      const response = await fetch(
+        `https://momentum.redberryinternship.ge/api/tasks/${id}/comments`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ text: subCommentText, parent_id: parentId }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to add subcomment");
+      }
+
+      const newSubCommentData = await response.json();
+      const updatedComments = comments.map((comment) =>
+        comment.id === parentId
+          ? {
+              ...comment,
+              sub_comments: Array.isArray(comment.sub_comments)
+                ? [...comment.sub_comments, newSubCommentData]
+                : [newSubCommentData],
+            }
+          : comment
+      );
+      setComments(updatedComments);
+      setNewSubComment({ ...newSubComment, [parentId]: "" });
+    } catch (error) {
+      console.error("Error adding subcomment:", error);
     }
   };
 
@@ -195,18 +279,76 @@ export default function Task({ getTasks, getStatuses }) {
         </section>
       </div>
 
-      <div className="px-10 py-11 rounded-[10px] border border-[#ddd2ff] bg-[rgba(248,243,254,0.65)] gap-[64px]">
+      <div className="px-10 py-11 rounded-[10px] border border-[#ddd2ff] bg-[rgba(248,243,254,0.65)] gap-[64px] w-[740px]">
         <div className="flex flex-col gap-7 bg-white rounded-[10px] border border-[#adb5bd] px-5 py-4">
-          <input type="text" placeholder="დაწერე კომენტარი" />
-          <button>დააკომენტარე</button>
+          <input
+            type="text"
+            placeholder="დაწერე კომენტარი"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          />
+          <button onClick={handleAddComment}>დააკომენტარე</button>
         </div>
 
         <div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <p>კომენტარები</p>
-            <div className="p-2.5 rounded-[30px] bg-[#8338ec]">
+            <div className="p-2.5 rounded-full bg-[#8338ec]">
               {task.total_comments}
             </div>
+          </div>
+
+          <div className="mt-4">
+            {comments.map((comment) => (
+              <div key={comment.id} className="mb-4">
+                <div className="flex gap-2 items-center">
+                  <img
+                    src={comment.author_avatar}
+                    alt="author avatar"
+                    className="w-8 h-8 rounded-full"
+                  />
+                  <div>
+                    <p className="font-semibold">{comment.author_nickname}</p>
+                    <p>{comment.text}</p>
+                  </div>
+                </div>
+
+                {comment.sub_comments?.map((subComment) => (
+                  <div key={subComment.id} className="ml-8 mt-2">
+                    <div className="flex gap-2 items-center">
+                      <img
+                        src={subComment.author_avatar}
+                        alt="author avatar"
+                        className="w-6 h-6 rounded-full"
+                      />
+                      <div>
+                        <p className="font-semibold">
+                          {subComment.author_nickname}
+                        </p>
+                        <p>{subComment.text}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                <div className="ml-8 mt-2">
+                  <input
+                    type="text"
+                    placeholder="უპასუხე"
+                    value={newSubComment[comment.id] || ""}
+                    onChange={(e) =>
+                      setNewSubComment({
+                        ...newSubComment,
+                        [comment.id]: e.target.value,
+                      })
+                    }
+                  />
+                  <button onClick={() => handleAddSubComment(comment.id)}>
+                    უპასუხე
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
