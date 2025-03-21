@@ -1,12 +1,39 @@
-# React + Vite
+# Momentum  
+  **A task management app that helps users organize, track, and complete their daily to-dos with ease. Built with a focus on simplicity, this app allows users to manage tasks, set deadlines, and keep track of their progress.**  
+    
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Technologies Used  
 
-Currently, two official plugins are available:
+**React.js:** Utilized to build a dynamic and interactive user interface with a component-based structure.   
+  
+**Tailwind CSS:** For styling the app using utility-first CSS classes, allowing rapid customization and development.  
+  
+**Formik:** For managing form state, handling submissions, and validating user input.  
+  
+**Yup:** For implementing validation rules to ensure data integrity in forms.  
+  
+**React Router:** For routing between pages.  
+  
+**Axios:**  For making API requests to manage tasks, fetch data, and handle interactions with the back end.    
+  
+**Moment.js:** For handling and formatting date and time-related operations in the task management system.  
+  
+**Local Storage:** Used to persist certain states, such as theme preferences.  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Expanding the ESLint configuration
+## Key Fetures
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**Task Management:** Users can create, edit, delete, and mark tasks as completed.  
+  
+**Task Filtering:** Filter tasks based on categories, deadlines, and completion status.  
+  
+**Dynamic Task Update:** Users can instantly see their task list updated as they add, edit, or delete tasks.   
+  
+**Error Handling:** Form validation is built using Yup to ensure proper input before task submission.    
+  
+  
+
+## Contact
+**LinkedIn**: https://www.linkedin.com/in/mariam-buzaladze-aa22b6297/  
+  
+**Email**: mariambuzaladze10@gmail.com
